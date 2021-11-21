@@ -1,0 +1,1 @@
+COM8 show_first_rectangle_x-3 show_first_rectangle_y0 show_first_rectangle_w2 show_first_rectangle_h2      show_sec_rectangle_x1 show_sec_rectangle_y0 show_sec_rectangle_w2 show_sec_rectangle_h2

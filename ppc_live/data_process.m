@@ -1,5 +1,3 @@
-
-
 function [frame_buff Target_list Cluster_list] = data_process(rxData,  Target_list, Cluster_list)
 
 frame_buff = [];
@@ -12,20 +10,20 @@ code_format = -1;
 while true
     if num >= 16
         % loop for magic word
-        magicBytes = typecast(uint8(rxData((idx+1):(8+idx))), 'uint64');
+        magicBytes = typecast(uint8(rxData((idx+1):(idx+8))), 'uint64'); 
         if( (magicBytes == syncPatternUINT64) || (magicBytes == tracker_syncPatternUINT64))
             
             if magicBytes == syncPatternUINT64
                 % cluster
-                code_format = 0;
+                code_format = 0; % 如果找到了点云的头，把标志位置0；
             elseif magicBytes == tracker_syncPatternUINT64
                 % object
-                code_format = 1;
+                code_format = 1; % 如果找到了目标的头，把标志位置1；
             end
             % find the header
-            offset = 8;
-            frame_num = typecast(uint8(rxData(idx+offset+1:idx+offset+4)), 'uint32');
-            offset = offset + 4;
+            offset = 8; % 偏移8个字节的帧头magic位
+            frame_num = typecast(uint8(rxData(idx+offset+1:idx+offset+4)), 'uint32'); % 四个字节的帧数
+            offset = offset + 4; % 偏移4个字节的帧数位
             Ntarget = typecast(uint8(rxData(idx+offset+1:idx+offset+4)), 'int32');
             frame_len = 0;
             if code_format == 0
@@ -36,7 +34,7 @@ while true
                 %disp('--- object ---')
             end
             
-            if (frame_len+idx) <= num
+            if (frame_len+idx) <= num            % 长度是否足一帧数据量
                 % ok one frame is complete
                 data_frame = rxData(idx+1:frame_len+idx);
                 % decode
@@ -69,7 +67,7 @@ while true
                 break;
             end
         else
-            idx = idx + 1;
+            idx = idx + 1; % 如果都不是点云和跟踪的帧头，则偏移
             num = num -1;
         end
         
